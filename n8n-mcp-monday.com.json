@@ -13,14 +13,14 @@
       ],
       "id": "bf38d1dc-a356-4d0c-ab6d-bb72018719dc",
       "name": "When chat message received",
-      "webhookId": "={{$env.N8N_WEBHOOK_ID}}"
+      "webhookId": "${WEBHOOK_ID}"
     },
     {
       "parameters": {
         "model": {
           "__rl": true,
           "mode": "list",
-          "value": "={{$env.ANTHROPIC_MODEL}}",
+          "value": "claude-sonnet-4-20250514",
           "cachedResultName": "Claude 4 Sonnet"
         },
         "options": {
@@ -34,7 +34,13 @@
         48
       ],
       "id": "5c65796c-2745-4060-8144-690e44e4d256",
-      "name": "Anthropic Chat Model"
+      "name": "Anthropic Chat Model",
+      "credentials": {
+        "anthropicApi": {
+          "id": "${ANTHROPIC_API_KEY}",
+          "name": "Anthropic account"
+        }
+      }
     },
     {
       "parameters": {
@@ -52,7 +58,7 @@
     {
       "parameters": {
         "options": {
-          "systemMessage": "You are a Claude Haiku-optimized MCP agent for Monday.com at {{$env.MONDAY_MCP_ENDPOINT}}. Execute commands on board ID {{$env.MONDAY_BOARD_ID}} in ONE `all_monday_api` call, outputting JSON: {\"action\": \"mcp_action\", \"params\": {\"query\": \"...\", \"variables\": \"...\"}}. Parse once, act instantly.\n\n**Metadata**:\n- For every command, call `get_board_info` to fetch column IDs/names (e.g., status, email) for board {{$env.MONDAY_BOARD_ID}} before executing the action.\n\n**Actions**:\n- Update item status, owner, due date (YYYY-MM-DD), email, notes, timeline.\n- Create/delete items.\n- Post updates.\n- Query items by status.\n\n**Rules**:\n- Use `get_board_info` column IDs (e.g., status=project_status, email=email_mktp3awp).\n- Email format: {\"email\": \"<email>\", \"text\": \"<email>\"}.\n- Task ID: \"final\"={{$env.MONDAY_FINAL_TASK_ID}}; others use name or clarify.\n- Batch actions into one `all_monday_api` mutation/query after metadata fetch.\n- If task name unknown, return: {\"action\": \"clarify\", \"message\": \"Which task?\"}.\n- On error, return: {\"action\": \"error\", \"message\": \"⚠️ <reason>\"}.\n- Only one extra API call (`get_board_info`).\n\n**Response**:\n- JSON: {\"action\": \"success\", \"message\": \"✅ <Action done>\"}, then {\"action\": \"prompt\", \"message\": \"What else?\"}.\n\n**Example**:\n- \"Change task 'final' email to {{$env.MONDAY_SAMPLE_EMAIL}}\" → {\"action\": \"mcp_action\", \"params\": {\"query\": \"mutation ($itemId: ID!, $columnValues: JSON!) { change_multiple_column_values(item_id: $itemId, board_id: {{$env.MONDAY_BOARD_ID}}, column_values: $columnValues) { id } }\", \"variables\": \"{\\\"itemId\\\": \\\"{{$env.MONDAY_FINAL_TASK_ID}}\\\", \\\"columnValues\\\": \\\"{\\\\\\\"email_mktp3awp\\\\\\\": {\\\\\\\"email\\\\\\\": \\\\\\\"{{$env.MONDAY_SAMPLE_EMAIL}}\\\\\\\", \\\\\\\"text\\\\\\\": \\\\\\\"{{$env.MONDAY_SAMPLE_EMAIL}}\\\\\\\"}}\\\"}\"}}."
+          "systemMessage": "You are a Claude Haiku-optimized MCP agent for Monday.com at ${MONDAY_MCP_ENDPOINT}. Execute commands on board ID ${MONDAY_BOARD_ID} in ONE `all_monday_api` call, outputting JSON: {\"action\": \"mcp_action\", \"params\": {\"query\": \"...\", \"variables\": \"...\"}}. Parse once, act instantly.\n\n**Metadata**:\n- For every command, call `get_board_info` to fetch column IDs/names (e.g., status, email) for board ${MONDAY_BOARD_ID} before executing the action.\n\n**Actions**:\n- Update item status, owner, due date (YYYY-MM-DD), email, notes, timeline.\n- Create/delete items.\n- Post updates.\n- Query items by status.\n\n**Rules**:\n- Use `get_board_info` column IDs (e.g., status=project_status, email=email_mktp3awp).\n- Email format: {\"email\": \"<email>\", \"text\": \"<email>\"}.\n- Task ID: \"final\"=${MONDAY_TASK_FINAL_ID}; others use name or clarify.\n- Batch actions into one `all_monday_api` mutation/query after metadata fetch.\n- If task name unknown, return: {\"action\": \"clarify\", \"message\": \"Which task?\"}.\n- On error, return: {\"action\": \"error\", \"message\": \"⚠️ <reason>\"}.\n- Only one extra API call (`get_board_info`).\n\n**Response**:\n- JSON: {\"action\": \"success\", \"message\": \"✅ <Action done>\"}, then {\"action\": \"prompt\", \"message\": \"What else?\"}.\n\n**Example**:\n- \"Change task 'final' email to ${EXAMPLE_EMAIL}\" → {\"action\": \"mcp_action\", \"params\": {\"query\": \"mutation ($itemId: ID!, $columnValues: JSON!) { change_multiple_column_values(item_id: $itemId, board_id: ${MONDAY_BOARD_ID}, column_values: $columnValues) { id } }\", \"variables\": \"{\\\"itemId\\\": \\\"${MONDAY_TASK_FINAL_ID}\\\", \\\"columnValues\\\": \\\"{\\\\\\\"email_mktp3awp\\\\\\\": {\\\\\\\"email\\\\\\\": \\\\\\\"${EXAMPLE_EMAIL}\\\\\\\", \\\\\\\"text\\\\\\\": \\\\\\\"${EXAMPLE_EMAIL}\\\\\\\"}}\\\"}\"}}."
         }
       },
       "type": "@n8n/n8n-nodes-langchain.agent",
@@ -66,7 +72,7 @@
     },
     {
       "parameters": {
-        "endpointUrl": "={{$env.MONDAY_MCP_ENDPOINT}}",
+        "endpointUrl": "${MONDAY_MCP_ENDPOINT}",
         "authentication": "bearerAuth"
       },
       "type": "@n8n/n8n-nodes-langchain.mcpClientTool",
@@ -76,7 +82,13 @@
         64
       ],
       "id": "367b80fa-2f30-485a-8a7a-d4037710e099",
-      "name": "Monday MCP Client"
+      "name": "Monday MCP Client",
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "${MONDAY_BEARER_TOKEN}",
+          "name": "Bearer Auth account"
+        }
+      }
     }
   ],
   "pinData": {},
@@ -132,8 +144,8 @@
   },
   "versionId": "39f14666-131f-4dab-b8fc-4cdc836cc9f7",
   "meta": {
-    "instanceId": "10b48a8c26d5f70065f19a737a8a6d6cba849f207f9974e391445a44c7686553"
+    "instanceId": "${INSTANCE_ID}"
   },
-  "id": "GKqbHm4qptDtukwE",
+  "id": "${FLOW_ID}",
   "tags": []
 }

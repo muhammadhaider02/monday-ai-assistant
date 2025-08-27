@@ -1,12 +1,5 @@
 .env
-.env.local
-.env.*.local
+*.env.*
 node_modules/
-.npm/
 .DS_Store
-Thumbs.db
-.vscode/
-.idea/
 *.log
-*.backup
-
