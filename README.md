@@ -1,4 +1,4 @@
-# Monday AI Agent - Advanced Board Management with n8n
+# Monday AI Agent - Advanced Board Management (n8n)
 
 A sophisticated n8n workflow that creates an AI-powered assistant for Monday.com board management using natural language commands. This project leverages the Model Context Protocol (MCP) and Anthropic Claude AI to provide an intuitive interface for managing your Monday.com boards.
 
